@@ -1,0 +1,112 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+main {
+  display: grid;
+  gap: 2rem;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.site-header .brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+.site-header .nav ul {
+  display: flex;
+  list-style: none;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+}
+.site-header .nav a {
+  text-decoration: none;
+}
+.site-header .nav a:hover {
+  text-decoration: underline;
+}
+.site-header .cta {
+  padding: .5rem 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  background: #ffffff0d;
+}
+.card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+button {
+  margin-top: .5rem;
+  cursor: pointer;
+}
+
+.site-footer {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+}
+.site-footer .footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+.site-footer .footer-copy {
+  margin-top: 1rem;
+  text-align: center;
+  color: #888;
+}
+
+/* Desktop enhancements */
+@media (min-width: 1024px) {
+  #root {
+    max-width: 1200px;
+    padding: 3rem;
+  }
+
+  main {
+    gap: 2.5rem;
+  }
+
+  .site-header .brand {
+    font-size: 1.5rem;
+  }
+  .site-header .nav ul {
+    gap: 1.5rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .site-footer .footer-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
