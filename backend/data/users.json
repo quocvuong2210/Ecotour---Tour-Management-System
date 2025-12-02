@@ -1,3 +1,26 @@
 [
-  
+  {
+    "id": "1764634154608",
+    "name": "Bùi Quốc Vương",
+    "email": "buiquocvuong2210@gmail.com",
+    "password": "$2a$10$lNNmSjqeRoL6jvDLyaCIfe/YkYOpjoPuVq1WZtac2wlLWy8YgGqGi",
+    "createdAt": "2025-12-02T00:09:14.608Z",
+    "gender": "male",
+    "day": "22",
+    "month": "2",
+    "year": "2024",
+    "city": "Đà Nẵng",
+    "emails": [
+      "buiquocvuong2210@gmail.com"
+    ],
+    "updatedAt": "2025-12-02T00:11:34.531Z"
+  },
+  {
+    "id": "1764638716220",
+    "name": "admin",
+    "email": "buiquocvuong2310@gmail.com",
+    "password": "$2a$10$A6Mbpn4F4skwCcSiiF21jeDYJ/dRH...vDz8PM559b3iP0P.YwHva",
+    "role": "admin",
+    "createdAt": "2025-12-02T01:25:16.220Z"
+  }
 ]

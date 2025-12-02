@@ -1,12 +1,49 @@
-import React, { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
-import AuthModal from '../components/AuthModal'
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Header from '../layout/Header'
 import Footer from '../layout/Footer'
 import HotelBooking from '../components/HotelBooking'
+import { getTours, searchTours } from '../services/api'
 
 function Home() {
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const [tours, setTours] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [loadingTours, setLoadingTours] = useState(false)
+  const [tourError, setTourError] = useState('')
+
+  useEffect(() => {
+    loadTours()
+  }, [])
+
+  const loadTours = async (keyword = '') => {
+    setLoadingTours(true)
+    setTourError('')
+    try {
+      const tourData = keyword ? await searchTours(keyword) : await getTours()
+      setTours(tourData)
+    } catch (error) {
+      setTourError(error.message)
+    } finally {
+      setLoadingTours(false)
+    }
+  }
+
+  const handleSearchTours = (e) => {
+    e.preventDefault()
+    loadTours(searchTerm.trim())
+  }
+
+  const formatPrice = (price) => {
+    if (price === undefined || price === null || Number.isNaN(Number(price))) return 'Liên hệ'
+    return new Intl.NumberFormat('vi-VN').format(price) + ' đ'
+  }
+
+  const getCoverImage = (tour) => {
+    if (tour.image) return tour.image
+    if (tour.images && tour.images.length > 0) return tour.images[0]
+    return '/img/default.jpg'
+  }
 
   return (
     <>
@@ -25,30 +62,7 @@ function Home() {
         
         <div className="relative z-10">
           {/* Header Navigation */}
-          <header className="flex items-center justify-between gap-4 py-4 px-4">
-            <div className="font-bold text-xl lg:text-2xl text-white drop-shadow-md">Ecotour</div> 
-            
-            <div className="flex items-center gap-4">
-              {user ? (
-                <>
-                  <span className="text-sm text-white drop-shadow-md">Xin chào, {user.name}!</span>
-                  <button 
-                    onClick={logout}
-                    className="px-4 py-2 rounded-md bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
-                  >
-                    Đăng xuất
-                  </button>
-                </>
-              ) : (
-                <button 
-                  onClick={() => setIsAuthModalOpen(true)}
-                  className="px-4 py-2 rounded-md bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
-                >
-                  Đăng nhập
-                </button>
-              )}
-            </div>
-          </header>
+          <Header transparent={true} />
 
           {/* Hero Content */}
           <div className="py-12 px-4">
@@ -62,42 +76,78 @@ function Home() {
         </div>
       </section>
 
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
-
       <main>
         <div className="space-y-8 px-4">
 
       <section id="tours" className="rounded-2xl p-8 lg:p-12 bg-gradient-to-br from-emerald-400/20 to-blue-500/20">
-        <h2 className="text-2xl font-semibold mb-3">Tour nổi bật</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <article className="border border-gray-200/60 rounded-xl p-4 bg-white/5 hover:shadow-lg transition">
-            <img className='rounded-xl' src="/public/img/cucphuong.jpg" alt="Rừng Cúc Phương" />
-            <h3>Rừng Cúc Phương</h3>
-            <p>Hành trình khám phá khu rừng quốc gia lâu đời nhất Việt Nam.</p>
-            <div className="flex gap-2 mt-2">
-              <button className="px-3 py-2 rounded-md border border-gray-300 hover:bg-gray-100 text-sm">Khám phá</button>
-              <button className="px-3 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 text-sm">Chi tiết</button>
-            </div>
-          </article>
-          <article className="border border-gray-200/60 rounded-xl p-4 bg-white/5 hover:shadow-lg transition">
-            <img className='rounded-xl' src="/public/img/phongnha.jpg" alt="Vườn Quốc gia Phong Nha" />
-            <h3>Vườn Quốc gia Phong Nha</h3>
-            <p>Trải nghiệm hệ thống hang động kỳ vĩ và thiên nhiên hoang sơ.</p>
-            <div className="flex gap-2 mt-2">
-              <button className="px-3 py-2 rounded-md border border-gray-300 hover:bg-gray-100 text-sm">Khám phá</button>
-              <button className="px-3 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 text-sm">Chi tiết</button>
-            </div>
-          </article>
-          <article className="border border-gray-200/60 rounded-xl p-4 bg-white/5 hover:shadow-lg transition">
-            <img className='rounded-xl' src="/public/img/condao.jpg" alt="Côn Đảo Xanh" />
-            <h3>Côn Đảo Xanh</h3>
-            <p>Gặp gỡ rùa biển và tìm hiểu hệ sinh thái biển đa dạng.</p>
-            <div className="flex gap-2 mt-2">
-              <button className="px-3 py-2 rounded-md border border-gray-300 hover:bg-gray-100 text-sm">Khám phá</button>
-              <button className="px-3 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 text-sm">Chi tiết</button>
-            </div>
-          </article>
-        </div>  
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-2xl font-semibold mb-1">Tour nổi bật</h2>
+            <p className="text-gray-600">Tìm kiếm và khám phá các tour sinh thái phù hợp với bạn</p>
+          </div>
+          <form onSubmit={handleSearchTours} className="flex gap-2 w-full lg:w-auto">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Tìm tour theo tên hoặc địa điểm"
+              className="flex-1 lg:w-72 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700"
+            >
+              Tìm tour
+            </button>
+          </form>
+        </div>
+
+        {tourError && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+            {tourError}
+          </div>
+        )}
+
+        {loadingTours ? (
+          <div className="text-center py-8 text-gray-600">Đang tải danh sách tour...</div>
+        ) : tours.length === 0 ? (
+          <div className="text-center py-12 text-gray-600">
+            Chưa có tour nào khớp với yêu cầu. Hãy thử từ khóa khác hoặc quay lại sau.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {tours.map((tour) => (
+              <article key={tour.id} className="border border-gray-200/60 rounded-xl p-4 bg-white/5 hover:shadow-lg transition flex flex-col">
+                <img
+                  className='rounded-xl h-48 w-full object-cover'
+                  src={getCoverImage(tour)}
+                  alt={tour.name}
+                  onError={(e) => { e.target.src = '/img/default.jpg' }}
+                />
+                <div className="mt-4 flex-1">
+                  <h3 className="text-lg font-semibold">{tour.name}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{tour.location}</p>
+                  <p className="mt-2 text-sm text-gray-700 line-clamp-3">{tour.description}</p>
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-gray-500">Giá người lớn</p>
+                    <p className="text-lg font-bold text-emerald-700">{formatPrice(tour.adultPrice ?? tour.price)}</p>
+                    {tour.childPrice !== null && tour.childPrice !== undefined && (
+                      <p className="text-xs text-gray-500 mt-1">Trẻ em: {formatPrice(tour.childPrice)}</p>
+                    )}
+                  </div>
+                  <button
+                    className="px-4 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 text-sm"
+                    onClick={() => navigate(`/tours/${tour.id}`)}
+                  >
+                    Xem chi tiết
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <section id="about">
